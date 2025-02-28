@@ -1,4 +1,5 @@
 import json
+import os
 from abc import ABC, abstractmethod
 
 
@@ -26,11 +27,19 @@ class JSONSaver(FileSaver):
             file.write("\n")
 
     def get_vacancies(self, criteria):
+        # Проверяем, существует ли файл
+        if not os.path.exists(self.filename):
+            return []  # Если файла нет, возвращаем пустой список
+
         with open(self.filename, "r") as file:
             vacancies = [json.loads(line) for line in file]
             return [v for v in vacancies if criteria(v)]
 
     def delete_vacancy(self, vacancy):
+        # Проверяем, существует ли файл
+        if not os.path.exists(self.filename):
+            return  # Если файла нет, ничего не делаем
+
         with open(self.filename, "r") as file:
             vacancies = [json.loads(line) for line in file]
         with open(self.filename, "w") as file:
