@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
+
 import requests
+
 
 class VacancyAPI(ABC):
     @abstractmethod
     def get_vacancies(self, query):
         pass
+
 
 class HeadHunterAPI(VacancyAPI):
     def get_vacancies(self, query):

@@ -1,6 +1,7 @@
 import json
 from abc import ABC, abstractmethod
 
+
 class FileSaver(ABC):
     @abstractmethod
     def add_vacancy(self, vacancy):
@@ -13,6 +14,7 @@ class FileSaver(ABC):
     @abstractmethod
     def delete_vacancy(self, vacancy):
         pass
+
 
 class JSONSaver(FileSaver):
     def __init__(self, filename="vacancies.json"):
