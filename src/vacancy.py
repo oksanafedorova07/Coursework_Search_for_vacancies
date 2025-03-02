@@ -1,26 +1,37 @@
-class Vacancy:
-    def __init__(self, name, url, salary, description):
-        self.name = name
-        self.url = url
-        self.salary = self.validate_salary(salary)
-        self.description = description if description is not None else ""
+from typing import List, Dict, Optional
 
-    def validate_salary(self, salary):
+
+class Vacancy:
+    """Класс для работы с вакансиями."""
+
+    def __init__(self, name: str, url: str, salary: Optional[int], description: Optional[str]) -> None:
+        """Инициализирует экземпляр вакансии."""
+        self.name = name # Название вакансии.
+        self.url = url # Ссылка на вакансию.
+        self.salary = self._validate_salary(salary) # Зарплата. Если не указана, будет установлена в 0.
+        self.description = description # Описание вакансии или требования.
+
+    def _validate_salary(self, salary: Optional[int]) -> int:
+        """Валидирует зарплату. Если зарплата не указана, возвращает 0."""
         if salary is None:
-            return 0  # Если зарплата не указана, считаем её равной 0
+            return 0
         return salary
 
-    def __lt__(self, other):
+    def __lt__(self, other: 'Vacancy') -> bool:
+        """Сравнивает вакансии по зарплате (меньше)."""
         return self.salary < other.salary
 
-    def __gt__(self, other):
+    def __gt__(self, other: 'Vacancy') -> bool:
+        """Сравнивает вакансии по зарплате (больше)."""
         return self.salary > other.salary
 
-    def __eq__(self, other):
+    def __eq__(self, other: 'Vacancy') -> bool:
+        """Сравнивает вакансии по зарплате (равенство)."""
         return self.salary == other.salary
 
     @staticmethod
-    def cast_to_object_list(vacancies_json):
+    def cast_to_object_list(vacancies_json: List[Dict]) -> List['Vacancy']:
+        """Преобразует список словарей с данными о вакансиях в список объектов Vacancy."""
         vacancies = []
         for item in vacancies_json:
             name = item.get("name")
