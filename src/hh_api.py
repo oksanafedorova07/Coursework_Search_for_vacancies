@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict
+from typing import Dict, List
+
 import requests
 
 
@@ -24,7 +25,10 @@ class HeadHunterAPI(VacancyAPI):
         Устанавливает базовый URL и параметры запроса.
         """
         self._url = "https://api.hh.ru/vacancies"  # Базовый URL API
-        self._params = {"per_page": 100, "area": "113"}  # Параметры запроса по умолчанию
+        self._params: dict[str, str | int | float | None] = {
+            "per_page": 100,
+            "area": "113",
+        }  # Параметры запроса по умолчанию
 
     def get_vacancies(self, query: str) -> List[Dict]:
         """Получает список вакансий с сайта hh.ru по ключевому слову."""

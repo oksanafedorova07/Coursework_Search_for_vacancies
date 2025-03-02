@@ -1,5 +1,7 @@
 import json
+
 import pytest
+
 from src.json_saver import JSONSaver
 from src.vacancy import Vacancy
 

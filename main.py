@@ -1,7 +1,8 @@
+from typing import List
+
 from src.hh_api import HeadHunterAPI
 from src.json_saver import JSONSaver
 from src.vacancy import Vacancy
-from typing import List
 
 
 def user_interaction() -> None:
@@ -33,7 +34,9 @@ def user_interaction() -> None:
         json_saver.add_vacancy(vacancy.__dict__)  # Преобразуем объект Vacancy в словарь
 
 
-def filter_vacancies(vacancies: List[Vacancy], filter_words: List[str]) -> List[Vacancy]:
+def filter_vacancies(
+    vacancies: List[Vacancy], filter_words: List[str]
+) -> List[Vacancy]:
     """Фильтрует вакансии по ключевым словам в описании."""
     return [v for v in vacancies if all(word in v.description for word in filter_words)]
 
