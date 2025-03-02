@@ -1,7 +1,5 @@
 import json
-
 import pytest
-
 from src.json_saver import JSONSaver
 from src.vacancy import Vacancy
 
@@ -20,15 +18,16 @@ def test_add_vacancy(json_saver):
         100000,
         "Требования: опыт работы от 3 лет...",
     )
-    json_saver.add_vacancy(vacancy)
+    json_saver.add_vacancy(vacancy.__dict__)  # Передаем словарь
 
     # Проверяем, что файл содержит добавленную вакансию
-    with open(json_saver.filename, "r") as file:
-        data = json.loads(file.readline())
-        assert data["name"] == "Python Developer"
-        assert data["url"] == "https://hh.ru/vacancy/123456"
-        assert data["salary"] == 100000
-        assert data["description"] == "Требования: опыт работы от 3 лет..."
+    with open(json_saver._filename, "r", encoding="utf-8") as file:
+        data = json.load(file)
+        assert len(data) == 1
+        assert data[0]["name"] == "Python Developer"
+        assert data[0]["url"] == "https://hh.ru/vacancy/123456"
+        assert data[0]["salary"] == 100000
+        assert data[0]["description"] == "Требования: опыт работы от 3 лет..."
 
 
 def test_get_vacancies(json_saver):
@@ -44,8 +43,8 @@ def test_get_vacancies(json_saver):
         120000,
         "Требования: опыт работы от 5 лет...",
     )
-    json_saver.add_vacancy(vacancy1)
-    json_saver.add_vacancy(vacancy2)
+    json_saver.add_vacancy(vacancy1.__dict__)  # Передаем словарь
+    json_saver.add_vacancy(vacancy2.__dict__)  # Передаем словарь
 
     # Получаем вакансии с зарплатой больше 100000
     criteria = lambda v: v["salary"] > 100000
@@ -68,15 +67,15 @@ def test_delete_vacancy(json_saver):
         120000,
         "Требования: опыт работы от 5 лет...",
     )
-    json_saver.add_vacancy(vacancy1)
-    json_saver.add_vacancy(vacancy2)
+    json_saver.add_vacancy(vacancy1.__dict__)  # Передаем словарь
+    json_saver.add_vacancy(vacancy2.__dict__)  # Передаем словарь
 
     # Удаляем вакансию Python Developer
-    json_saver.delete_vacancy(vacancy1)
+    json_saver.delete_vacancy(vacancy1.__dict__)
 
     # Проверяем, что осталась только одна вакансия
-    with open(json_saver.filename, "r") as file:
-        vacancies = [json.loads(line) for line in file]
+    with open(json_saver._filename, "r", encoding="utf-8") as file:
+        vacancies = json.load(file)
         assert len(vacancies) == 1
         assert vacancies[0]["name"] == "Java Developer"
 
@@ -100,13 +99,13 @@ def test_delete_nonexistent_vacancy(json_saver):
         120000,
         "Требования: опыт работы от 5 лет...",
     )
-    json_saver.add_vacancy(vacancy1)
+    json_saver.add_vacancy(vacancy1.__dict__)  # Передаем словарь
 
     # Пытаемся удалить вакансию, которой нет в файле
-    json_saver.delete_vacancy(vacancy2)
+    json_saver.delete_vacancy(vacancy2.__dict__)
 
     # Проверяем, что файл не изменился
-    with open(json_saver.filename, "r") as file:
-        vacancies = [json.loads(line) for line in file]
+    with open(json_saver._filename, "r", encoding="utf-8") as file:
+        vacancies = json.load(file)
         assert len(vacancies) == 1
         assert vacancies[0]["name"] == "Python Developer"
