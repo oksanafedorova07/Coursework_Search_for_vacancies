@@ -25,25 +25,14 @@ class FileSaver(ABC):
 
 
 class JSONSaver:
-    """
-    Класс для работы с JSON-файлами, содержащими вакансии.
-    Реализует методы для добавления, получения и удаления вакансий.
-    """
+    """Класс для работы с JSON-файлами, содержащими вакансии."""
 
     def __init__(self, filename: str = "vacancies.json") -> None:
-        """
-        Инициализирует экземпляр JSONSaver.
-
-        :param filename: Имя файла для сохранения вакансий. По умолчанию "vacancies.json".
-        """
+        """Инициализирует экземпляр JSONSaver."""
         self._filename = filename
 
     def add_vacancy(self, vacancy: Dict) -> None:
-        """
-        Добавляет вакансию в JSON-файл.
-
-        :param vacancy: Вакансия для добавления (в виде словаря).
-        """
+        """Добавляет вакансию в JSON-файл."""
         vacancies = self.get_vacancies(lambda v: True)  # Получаем все вакансии
         vacancies.append(vacancy)  # Добавляем новую вакансию
 
@@ -52,12 +41,7 @@ class JSONSaver:
             json.dump(vacancies, file, ensure_ascii=False, indent=4)
 
     def get_vacancies(self, criteria: Callable[[Dict], bool]) -> List[Dict]:
-        """
-        Возвращает список вакансий, соответствующих критерию.
-
-        :param criteria: Функция-критерий для фильтрации вакансий.
-        :return: Список отфильтрованных вакансий.
-        """
+        """Возвращает список вакансий, соответствующих критерию."""
         if not os.path.exists(self._filename):
             return []
 
@@ -69,11 +53,7 @@ class JSONSaver:
             return [v for v in vacancies if criteria(v)]
 
     def delete_vacancy(self, vacancy: Dict) -> None:
-        """
-        Удаляет вакансию из JSON-файла.
-
-        :param vacancy: Вакансия для удаления (в виде словаря).
-        """
+        """Удаляет вакансию из JSON-файла."""
         if not os.path.exists(self._filename):
             return
 

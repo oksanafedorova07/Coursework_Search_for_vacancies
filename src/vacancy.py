@@ -6,16 +6,22 @@ class Vacancy:
 
     def __init__(self, name: str, url: str, salary: Optional[int], description: Optional[str]) -> None:
         """Инициализирует экземпляр вакансии."""
-        self.name = name # Название вакансии.
-        self.url = url # Ссылка на вакансию.
-        self.salary = self._validate_salary(salary) # Зарплата. Если не указана, будет установлена в 0.
-        self.description = description # Описание вакансии или требования.
+        self.name = name  # Название вакансии.
+        self.url = url  # Ссылка на вакансию.
+        self.salary = self._validate_salary(salary)  # Зарплата. Если не указана, будет установлена в 0.
+        self.description = self._validate_description(description)  # Описание вакансии или требования.
 
     def _validate_salary(self, salary: Optional[int]) -> int:
-        """Валидирует зарплату. Если зарплата не указана, возвращает 0."""
+        """Проверяем зарплату. Если зарплата не указана, возвращает 0."""
         if salary is None:
             return 0
         return salary
+
+    def _validate_description(self, description: Optional[str]) -> str:
+        """Проверяем описание. Если описание не указано, возвращает пустую строку."""
+        if description is None:
+            return ""
+        return description
 
     def __lt__(self, other: 'Vacancy') -> bool:
         """Сравнивает вакансии по зарплате (меньше)."""

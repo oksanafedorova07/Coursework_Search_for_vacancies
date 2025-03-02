@@ -27,13 +27,7 @@ class HeadHunterAPI(VacancyAPI):
         self._params = {"per_page": 100, "area": "113"}  # Параметры запроса по умолчанию
 
     def get_vacancies(self, query: str) -> List[Dict]:
-        """
-        Получает список вакансий с сайта hh.ru по ключевому слову.
-
-        :param query: Ключевое слово для поиска вакансий.
-        :return: Список вакансий в формате словарей.
-        :raises Exception: Если запрос к API завершился с ошибкой.
-        """
+        """Получает список вакансий с сайта hh.ru по ключевому слову."""
         self._params["text"] = query  # Добавляем ключевое слово в параметры запроса
         response = requests.get(self._url, params=self._params)
 
