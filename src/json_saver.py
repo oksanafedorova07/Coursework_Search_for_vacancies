@@ -1,49 +1,91 @@
+from abc import ABC, abstractmethod
 import json
 import os
-from abc import ABC, abstractmethod
+from typing import Callable, List, Dict, Any
 
 
 class FileSaver(ABC):
+    """Абстрактный класс для работы с файлами, содержащими вакансии.
+    Определяет методы для добавления, получения и удаления вакансий."""
+
     @abstractmethod
-    def add_vacancy(self, vacancy):
+    def add_vacancy(self, vacancy: Any) -> None:
+        """Добавляет вакансию в файл."""
         pass
 
     @abstractmethod
-    def get_vacancies(self, criteria):
+    def get_vacancies(self, criteria: Callable[[Dict], bool]) -> List[Dict]:
+        """Возвращает список вакансий, соответствующих критерию."""
         pass
 
     @abstractmethod
-    def delete_vacancy(self, vacancy):
+    def delete_vacancy(self, vacancy: Any) -> None:
+        """Удаляет вакансию из файла."""
         pass
 
 
-class JSONSaver(FileSaver):
-    def __init__(self, filename="vacancies.json"):
-        self.filename = filename
+class JSONSaver:
+    """
+    Класс для работы с JSON-файлами, содержащими вакансии.
+    Реализует методы для добавления, получения и удаления вакансий.
+    """
 
-    def add_vacancy(self, vacancy):
-        with open(self.filename, "a") as file:
-            json.dump(vacancy.__dict__, file)
-            file.write("\n")
+    def __init__(self, filename: str = "vacancies.json") -> None:
+        """
+        Инициализирует экземпляр JSONSaver.
 
-    def get_vacancies(self, criteria):
-        # Проверяем, существует ли файл
-        if not os.path.exists(self.filename):
-            return []  # Если файла нет, возвращаем пустой список
+        :param filename: Имя файла для сохранения вакансий. По умолчанию "vacancies.json".
+        """
+        self._filename = filename
 
-        with open(self.filename, "r") as file:
-            vacancies = [json.loads(line) for line in file]
+    def add_vacancy(self, vacancy: Dict) -> None:
+        """
+        Добавляет вакансию в JSON-файл.
+
+        :param vacancy: Вакансия для добавления (в виде словаря).
+        """
+        vacancies = self.get_vacancies(lambda v: True)  # Получаем все вакансии
+        vacancies.append(vacancy)  # Добавляем новую вакансию
+
+        # Сохраняем обновленный список в файл
+        with open(self._filename, "w", encoding="utf-8") as file:
+            json.dump(vacancies, file, ensure_ascii=False, indent=4)
+
+    def get_vacancies(self, criteria: Callable[[Dict], bool]) -> List[Dict]:
+        """
+        Возвращает список вакансий, соответствующих критерию.
+
+        :param criteria: Функция-критерий для фильтрации вакансий.
+        :return: Список отфильтрованных вакансий.
+        """
+        if not os.path.exists(self._filename):
+            return []
+
+        with open(self._filename, "r", encoding="utf-8") as file:
+            try:
+                vacancies = json.load(file)
+            except json.JSONDecodeError:
+                vacancies = []
             return [v for v in vacancies if criteria(v)]
 
-    def delete_vacancy(self, vacancy):
-        # Проверяем, существует ли файл
-        if not os.path.exists(self.filename):
-            return  # Если файла нет, ничего не делаем
+    def delete_vacancy(self, vacancy: Dict) -> None:
+        """
+        Удаляет вакансию из JSON-файла.
 
-        with open(self.filename, "r") as file:
-            vacancies = [json.loads(line) for line in file]
-        with open(self.filename, "w") as file:
-            for v in vacancies:
-                if v["url"] != vacancy.url:
-                    json.dump(v, file)
-                    file.write("\n")
+        :param vacancy: Вакансия для удаления (в виде словаря).
+        """
+        if not os.path.exists(self._filename):
+            return
+
+        with open(self._filename, "r", encoding="utf-8") as file:
+            try:
+                vacancies = json.load(file)
+            except json.JSONDecodeError:
+                vacancies = []
+
+        # Удаляем вакансию
+        vacancies = [v for v in vacancies if v["url"] != vacancy["url"]]
+
+        # Сохраняем обновленный список в файл
+        with open(self._filename, "w", encoding="utf-8") as file:
+            json.dump(vacancies, file, ensure_ascii=False, indent=4)
